@@ -25,7 +25,7 @@ def complete_id(nr):
     return rez + '.txt'
 
 
-def tag_reading_and_entity_extraction(path='', file_count=0):
+def training_data(paths=None, file_count=0):
 
     """
         Use the general pattern of a tag <ENAMEX\sTYPE=".*?">.*?</ENAMEX>
@@ -34,7 +34,7 @@ def tag_reading_and_entity_extraction(path='', file_count=0):
         Chunk the elements of the list leaving only a tuple reprezented by the type of the entity
         and its name
 
-        :param path           the path towards the file containing the training data
+        :param paths          the paths towards the file containing the training data
         :param file_count     the number of files to read
         :return               a list of lists where each element is a list formed from the type of the entity and its ful name
 
@@ -43,17 +43,36 @@ def tag_reading_and_entity_extraction(path='', file_count=0):
         :var data:          the strings representing the tags extracted from the files
 
     """
+
+    # extract training data from WSJ
     pattern = re.compile(r'<.*?TYPE=".*?">.*?</.*?>', re.ASCII)
     snd_pattern = re.compile(r'[>"].*?[<"]', re.ASCII)
 
     data = []
     for i in range(1, file_count+1):
-        data = data + pattern.findall(nltk.data.load(path+complete_id(i), format='text'))
+        data = data + pattern.findall(nltk.data.load(paths[0]+complete_id(i), format='text'))
 
-    # from every tag form the list find the two substrings
+    # from every tag form the list find the two sub-strings
     # that correspond to the snd_pattern
     raw_entities = [list(map(lambda s: (s[:len(s)-1])[1:], l)) for l in (re.findall(snd_pattern, tag) for tag in data)]
 
+    # extract data from names folders
+    del data
+    data = PlaintextCorpusReader(paths[1], '.*')
+
+    raw_entities += [
+        ['PERSON', w]
+        for w in (
+            data.words('names.male') +
+            data.words('names.female') +
+            data.words('names.family')
+        )
+    ]
+    '''+ [
+        ['PERSON', fn + sn]
+        for fn in data.words('names.male') + data.words('names.female')
+        for sn in data.words('names.family')]
+    '''
     # create a data structure that contains the entities
     # and grants quick access to them
 
@@ -71,15 +90,5 @@ def untagged_reading(path=''):
     """
 
     word_list = PlaintextCorpusReader(path, '.*\.txt')
-    print(word_list.words('wsj_0001.txt'))
-    print(word_list.sents('wsj_0012.txt'))
     return word_list
 
-path = '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_training/'
-file_count = 2000
-
-ren = tag_reading_and_entity_extraction(path, file_count)
-
-print(ren)
-
-path1 = '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_untagged/'
