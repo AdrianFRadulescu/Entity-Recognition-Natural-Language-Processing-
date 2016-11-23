@@ -1,19 +1,30 @@
-import nltk
 import re
-from src.tagging import tag, final_tagger,concat
+
+from src.tagging import final_tagger, concat
+from src.wikification import find_inf
 
 
-def dbpedia_filter():
+def wikipedia_and_dbpedia_filter(entity=None):
+
+    print(find_inf(entity))
 
     return []
 
 
-def tagged_corpud_filter():
+def tagged_corpus_filter(candidate=None):
+
+    """
+
+    :param candidate: the entity that is to be searched in the tagged entities data structures
+    :return: true if there is a match for the given candidate
+             false otherwise
+
+    """
 
     return []
 
 
-def candidate_filter(candidates):
+def candidate_filter(candidates=None):
 
     """
 
@@ -22,6 +33,9 @@ def candidate_filter(candidates):
 
     """
     #return filter(lambda x: #data.find() , candidates)
+
+    f = [wikipedia_and_dbpedia_filter(candidate) for candidate in candidates]
+
     return []
 
 
@@ -37,7 +51,6 @@ def sent_entities(sent=None):
     # extract the groups of consecutive nouns and determiners
 
     tagger = final_tagger()
-
 
     str_tagged_sent = \
         concat(
@@ -57,7 +70,8 @@ def sent_entities(sent=None):
     gep = [
         re.compile(r'((?:\s\w+->(?:DT|JJ|NNPS|NNP|NNS|NN))*(?:\sof->IN)?\s\w+->(?:NNPS|NNP|NNS|NN))', re.ASCII),
         re.compile(r'(?:\s\w+->(?:NNPS|NNP|NNS|NN))+', re.ASCII),
-        re.compile(r'\w+->DT\s(?:\s\w+->(?:NNPS|NNP|NNS|NN))+')
+        re.compile(r'\w+->DT\s(?:\s\w+->(?:NNPS|NNP|NNS|NN))+'),
+        re.compile(r'Mr[.]->\w+\s(?:\s\w+->(?:NNPS|NNP|NNS|NN))+')
     ]
 
     # words extraction patern from the results of the previous extraction
@@ -71,7 +85,6 @@ def sent_entities(sent=None):
 
     # evaluate each entity against the corpus data and dbpedia
 
-    print("cand")
     print(candidate_entities[:100])
 
     return candidate_filter(candidates=candidate_entities)

@@ -12,7 +12,7 @@ from nltk.corpus.reader.wordnet import *
 
 
 def complete_id(nr):
-    rez  = 'wsj_'
+    rez = 'wsj_'
     if nr < 10:
         rez = rez + '000' + str(nr)
     elif nr < 100:
@@ -37,17 +37,15 @@ def training_data(paths=None, file_count=0):
         :param paths          the paths towards the file containing the training data
         :param file_count     the number of files to read
         :return               a list of lists where each element is a list formed from the type of the entity and its ful name
-
-        :var pattern:       the general pattern of a tag
-        :var snd_pattern:   the approximate pattern of the desired information from the tag
-        :var data:          the strings representing the tags extracted from the files
-
     """
 
     # extract training data from WSJ
+    # pattern : the general pattern of a tag
+    # snd_pattern : the approximate pattern of the desired information from the tag
     pattern = re.compile(r'<.*?TYPE=".*?">.*?</.*?>', re.ASCII)
     snd_pattern = re.compile(r'[>"].*?[<"]', re.ASCII)
 
+    # the strings representing the tags extracted from the files
     data = []
     for i in range(1, file_count+1):
         data = data + pattern.findall(nltk.data.load(paths[0]+complete_id(i), format='text'))

@@ -1,8 +1,10 @@
 
 from src.files_reading import training_data
 from src.files_reading import untagged_reading
-from src.entity_extraction import sent_entities
+#from src.entity_extraction import sent_entities
 from src.entity_extraction import test_sent_entities
+
+from src.wikification import find_inf
 
 paths = [
     '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_training/',
@@ -10,14 +12,12 @@ paths = [
     '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_untagged'
 ]
 
-file_count = 10
+file_count = 2000
 
-#entity_data = training_data(paths, file_count)
+tagged_entity_data = training_data(paths, file_count)
 
 untagged = untagged_reading(paths[2])
 
-for x in range(0,10):
+for x in range(0, 3):
 
     test_sent_entities(untagged.sents()[x])
-
-
