@@ -16,10 +16,10 @@ ORGANIZATION_attributes = ['Organization', 'Organizational behavior', 'Intergove
  'Organization development', 'International organization', 'Nonprofit organization', 'National Organization for Women',
  'Knowledge organization', 'Community organization', 'organization ethics', 'ethics', 'behavior', 'Nonprofit', 'standards']
 
-LOCATION_attributes = []
+LOCATION_attributes = ['altitude', 'settlement', 'history']
 
-PERSON_attributes = ['house', 'spouse', 'wife', 'Mr', 'Mr.', 'home', 'husband', 'position', 'function', 'employed', 'job',
-                     'ocupation',]
+PERSON_attributes = ['house', 'spouse', 'wife', 'Mrs.', 'Mrs', 'Mr', 'Mr.', 'home', 'husband', 'position', 'function', 'employed', 'job',
+                     'ocupation']
 
 
 def contains_at_least_one_attribute(title=None):
@@ -87,7 +87,3 @@ def find_inf(entity=None):
     #url_titles = [urllib.parse.quote_plus(i) for i in titles]
     #pprint(url_titles)
     return titles
-for x in find_inf([('Barak','NNP'),('Obama','NNP')]):
-    print (x)
-for x in find_inf([('Pierre','NNP'),('Vinken','NNP')]):
-    print (x)

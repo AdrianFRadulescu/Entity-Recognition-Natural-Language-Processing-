@@ -10,6 +10,7 @@ from nltk.corpus.reader import PlaintextCorpusReader
 from nltk.corpus.reader import WordListCorpusReader
 from nltk.corpus.reader.wordnet import *
 
+from src.tagging import final_tagger
 
 def complete_id(nr):
     rez = 'wsj_'
@@ -58,7 +59,7 @@ def training_data(paths=None, file_count=0):
     del data
     data = PlaintextCorpusReader(paths[1], '.*')
 
-    raw_entities += [
+    name_data = [
         ['PERSON', w]
         for w in (
             data.words('names.male') +
@@ -74,7 +75,19 @@ def training_data(paths=None, file_count=0):
     # create a data structure that contains the entities
     # and grants quick access to them
 
-    return raw_entities
+    x = raw_entities[0]
+
+    from src.querying import DataStructure
+
+    d = DataStructure()
+
+    d.insert(x[1], x[0])
+
+    print(d.entities())
+    d.test()
+    #wn = WordNode()
+
+    return raw_entities, name_data
 
 
 def untagged_reading(path=''):
