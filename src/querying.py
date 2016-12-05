@@ -6,13 +6,13 @@ from src.tagging import final_tagger
 from nltk.tokenize import word_tokenize
 
 
-class DataStructure(object):
+class OrganizationDictionary(object):
 
     def __init__(self):
 
         self.__pos_dict = {}
 
-    def insert(self, entity,label):
+    def insert(self, entity, label):
 
         '''
             Inserts an entity given as a string of words(untagged) into the pos_dictionaries
@@ -30,31 +30,34 @@ class DataStructure(object):
 
         entity = final_tagger().tag(word_tokenize(entity))
 
-        for tag in entity:
-            self.__update(tag[1], tag[0], None)
+        print(entity)
 
-        #for index in range(0,len(entity)-2):
+        self.__update(entity)
 
-    def __update(self, pos, name, node=None):
+        print(entity[-1])
+
+        print(self.__pos_dict[entity[-1][1]][entity[-1][0]])
+        self.__pos_dict[entity[-1][1]][entity[-1][0]].add_label(label)
+
+        print()
+
+    def __update(self, entity):
 
         '''
-            Update the dictionary for the given part of POS
-            in case the POS was not encountered yet create a new place in the dictionary
-            otherwise check if the nodes wrap the same word.If yes then add the links to the existing node,otherwise
-            ad the node to the list
-        :param pos:
-        :param node:
-        :return:
+            Check if all the words are already in the dictionary
+            For the ones that are not then create and add them
+        :param entity: the entity containing the words and the corresponding POS
         '''
 
-        if pos in self.__pos_dict:
-
-            if name not in self.__pos_dict[pos]:
-                self.__pos_dict[pos][name] = self.__WordNode(name)
+        for (word, pos) in entity:
+            if pos not in self.__pos_dict:
+                # create a new node and add it to the dictionary
+                self.__pos_dict[pos] = {}
+                self.__pos_dict[pos][word] = self.__Node(word)
             else:
-                self.__pos_dict[pos][name].union(node)
-        else:
-            self.__pos_dict[pos] = {name:self.__WordNode(name)}
+                if word not in self.__pos_dict[pos]:
+                    # create a new node and add it to the dictionary
+                    self.__pos_dict[pos][word] = self.__Node(word)
 
     def entities(self):
 
@@ -64,37 +67,65 @@ class DataStructure(object):
 
         return self.__pos_dict
 
-    def test(self):
+    class __Node(object):
 
-        x1 = self.__WordNode(val='mama')
-        x2 = self.__WordNode(val='mama',links=[x1])
+        '''
+            A wrapper around a word containing the word and the links
+            to the other words that follow it in their common entities
+        '''
 
-        x1.union(x2)
+        def __init__(self, word=None, links=[], labels=[]):
 
-        print(x1 in x1.links())
+            '''
 
-    class __WordNode(object):
+            :param word: the actual word
+            :param links: a list of Node objects pointing to the words that are
+                right after word in the entities where word appears
+            :param is_entity: a pointer towards the actual entity containing the word
+            '''
 
-        def __init__(self, val=None, links=[], is_entity=False):
-
-            self.__val = val
+            self.__word = word
             self.__links = links
-            self.__is_entity = is_entity
+            self.__labels = labels
 
         def links(self):
+
+            '''
+            :return: the links to all the words that follow this one(with the corresponding pos)
+            '''
+
             return self.__links
 
-        def val(self):
-            return self.__val
+        def word(self):
+
+            '''
+            :return: the word contained in the node object
+            '''
+
+            return self.__word
+
+        def add_label(self, l):
+            self.__labels += [l]
+
+        def get_labels(self):
+            return self.__labels
 
         def union(self, wn):
+            '''
+                if two nodes have the same word then unite the links
+            :param wn:
+            :return:
+            '''
             self.__links =self.__links + wn.links()
 
         def __eq__(self, wn):
-            return self.__val == wn.val()
+            return self.__word == wn.word()
 
         def __repr__(self):
-            return "__WordNode("+str(self.__val) + "," + str(self.__links) + ")"
+            return "__Node("+str(self.__word) + "," + str(self.__links) + "," + str(self.__labels) + ")"
 
         def __str__(self):
-            return str(self.__val) + " " + str(self.__links)
+            return "Node :" +" "+str(self.__word) + " " + str(self.__links) + " " + str(self.__labels)
+
+    def labels(self, pos, word):
+        return self.__pos_dict[pos][word].get_labels()

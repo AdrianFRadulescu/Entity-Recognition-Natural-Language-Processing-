@@ -67,6 +67,7 @@ def find_inf(entity=None):
 
         if url_data is not None:
             url_data += [data]
+            break
 
     # http.client socket returns bytes - we convert this to utf-8
     url_data = list(map(lambda x: x.decode("utf-8"), url_data))

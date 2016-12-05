@@ -1,12 +1,15 @@
 
+import pickle
+from src.file_reading import training_data
+from src.file_reading import untagged_reading
+from src.entity_extraction import sent_entities,corpus_entities
+from src.entity_extraction import corpus_entities
+from nltk.corpus import names
 
-from src.files_reading import training_data
-from src.files_reading import untagged_reading
-#from src.entity_extraction import sent_entities
-from src.entity_extraction import test_sent_entities
-
-
+from src.enitity_classifier import organization_classifier, org_features, specifics
 from src.wikification import find_inf
+
+from src.tagging import concat
 
 paths = [
     '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_training/',
@@ -14,19 +17,27 @@ paths = [
     '/Users/adrian_radulescu1997/Documents/Uni-Courses/Natural Language Processing/wsj_untagged'
 ]
 
-file_count = 3
+
+'''
+    To save time I store the data gained from the tagged data
+    in a pickle file and the loaded them in globl.py
+'''
+
+'''
+entity_dict, org_tokens_dict, name_dict,loc_dict = training_data(paths)
 
 
-wsj_tagged_entity_data, name_data = training_data(paths, file_count)
+pickle.dump(entity_dict, open('raw_labeled_data.pkl', 'wb'))
+pickle.dump(org_tokens_dict,open('organization_data.pkl', 'wb'))
+pickle.dump(name_dict,open('name_data.pkl', 'wb'))
+pickle.dump(loc_dict,open('loc_data.pkl', 'wb'))
+'''
 
-d = {'a':{'a':2}}
+untagged = untagged_reading(paths[2])
 
-print(d['a']['a'])
+entites = corpus_entities(untagged)
 
-d['a']['a']=3
-print(d['a']['a'])
+for e in entites:
+    print(e)
+print(len(entites))
 
-d['a']['b'] =1
-print(d)
-
-#untagged = untagged_reading(paths[2])
